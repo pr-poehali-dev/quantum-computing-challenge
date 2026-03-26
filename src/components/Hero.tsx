@@ -1,13 +1,24 @@
 import { useScroll, useTransform, motion } from "framer-motion";
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Hero() {
+  const navigate = useNavigate();
   const container = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: container,
     offset: ["start start", "end start"],
   });
   const y = useTransform(scrollYProgress, [0, 1], ["0vh", "50vh"]);
+
+  const handleStart = () => {
+    const token = localStorage.getItem("planeta_token");
+    if (token) {
+      navigate("/chat");
+    } else {
+      document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <div
@@ -33,7 +44,7 @@ export default function Hero() {
           Место, где живые разговоры объединяют людей. Мгновенно, легко, без лишнего шума.
         </p>
         <button
-          onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}
+          onClick={handleStart}
           className="bg-white text-black px-8 py-3 uppercase tracking-wide text-sm font-medium hover:bg-neutral-200 transition-colors duration-300 cursor-pointer"
         >
           Начать общение
