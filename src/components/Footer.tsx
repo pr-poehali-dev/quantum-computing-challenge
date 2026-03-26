@@ -1,61 +1,44 @@
 export default function Footer() {
   return (
     <div
-      className="relative h-[400px] sm:h-[600px] lg:h-[800px] max-h-[800px]"
+      className="relative"
       style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}
     >
-      <div className="relative h-[calc(100vh+400px)] sm:h-[calc(100vh+600px)] lg:h-[calc(100vh+800px)] -top-[100vh]">
-        <div className="h-[400px] sm:h-[600px] lg:h-[800px] sticky top-[calc(100vh-400px)] sm:top-[calc(100vh-600px)] lg:top-[calc(100vh-800px)]">
-          <div className="bg-neutral-900 py-4 sm:py-6 lg:py-8 px-4 sm:px-6 h-full w-full flex flex-col justify-between">
-            <div className="flex shrink-0 gap-8 sm:gap-12 lg:gap-20">
-              <div className="flex flex-col gap-1 sm:gap-2">
-                <h3 className="mb-1 sm:mb-2 uppercase text-neutral-400 text-xs sm:text-sm">Планета</h3>
-                <a
-                  href="#features"
-                  className="text-white hover:text-neutral-400 transition-colors duration-300 text-sm sm:text-base"
-                >
-                  Возможности
-                </a>
-                <a
-                  href="#pricing"
-                  className="text-white hover:text-neutral-400 transition-colors duration-300 text-sm sm:text-base"
-                >
-                  Тарифы
-                </a>
-                <a
-                  href="#contact"
-                  className="text-white hover:text-neutral-400 transition-colors duration-300 text-sm sm:text-base"
-                >
-                  Контакты
-                </a>
+      <div className="relative h-[calc(100vh+400px)] sm:h-[calc(100vh+600px)] -top-[100vh]">
+        <div
+          className="h-[400px] sm:h-[600px] sticky top-[calc(100vh-400px)] sm:top-[calc(100vh-600px)]"
+          style={{ background: "linear-gradient(135deg, #0a0718, #0f0c29)" }}
+        >
+          <div className="py-8 px-6 h-full w-full flex flex-col justify-between border-t border-white/10">
+            <div className="flex shrink-0 gap-12 sm:gap-20">
+              <div className="flex flex-col gap-2">
+                <h3 className="mb-2 uppercase text-white/30 text-xs tracking-widest">Планета</h3>
+                <a href="#features" className="text-white/60 hover:text-white transition-colors text-sm">Возможности</a>
+                <a href="#pricing" className="text-white/60 hover:text-white transition-colors text-sm">Тарифы</a>
+                <a href="#contact" className="text-white/60 hover:text-white transition-colors text-sm">Контакты</a>
               </div>
-              <div className="flex flex-col gap-1 sm:gap-2">
-                <h3 className="mb-1 sm:mb-2 uppercase text-neutral-400 text-xs sm:text-sm">Пользователям</h3>
-                <a
-                  href="#register"
-                  className="text-white hover:text-neutral-400 transition-colors duration-300 text-sm sm:text-base"
-                >
-                  Регистрация
-                </a>
-                <a
-                  href="#login"
-                  className="text-white hover:text-neutral-400 transition-colors duration-300 text-sm sm:text-base"
-                >
-                  Войти
-                </a>
-                <a
-                  href="#privacy"
-                  className="text-white hover:text-neutral-400 transition-colors duration-300 text-sm sm:text-base"
-                >
-                  Конфиденциальность
-                </a>
+              <div className="flex flex-col gap-2">
+                <h3 className="mb-2 uppercase text-white/30 text-xs tracking-widest">Пользователям</h3>
+                <a href="#register" className="text-white/60 hover:text-white transition-colors text-sm">Регистрация</a>
+                <a href="#login" className="text-white/60 hover:text-white transition-colors text-sm">Войти</a>
+                <a href="#privacy" className="text-white/60 hover:text-white transition-colors text-sm">Конфиденциальность</a>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 sm:gap-0">
-              <h1 className="text-[18vw] sm:text-[16vw] lg:text-[14vw] leading-[0.8] mt-4 sm:mt-6 lg:mt-10 text-white font-bold tracking-tight">
+
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+              <h1
+                className="font-black leading-none"
+                style={{
+                  fontSize: "clamp(4rem, 18vw, 14rem)",
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(168,85,247,0.15) 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
                 ПЛАНЕТА
               </h1>
-              <p className="text-white text-sm sm:text-base">{new Date().getFullYear()} Планета</p>
+              <p className="text-white/30 text-sm shrink-0">{new Date().getFullYear()} Планета</p>
             </div>
           </div>
         </div>

@@ -18,6 +18,8 @@ function formatTime(iso: string) {
   return d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
 }
 
+const ORIGINAL_TITLE = "Планета — чат";
+
 export default function Chat() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -26,15 +28,65 @@ export default function Chat() {
   const [username, setUsername] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [hasNew, setHasNew] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const titleBlinkRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastIdRef = useRef<number>(0);
+  const isVisibleRef = useRef<boolean>(true);
+
+  useEffect(() => {
+    document.title = ORIGINAL_TITLE;
+    const onVisibility = () => {
+      isVisibleRef.current = !document.hidden;
+      if (!document.hidden) {
+        setHasNew(false);
+        if (titleBlinkRef.current) clearInterval(titleBlinkRef.current);
+        document.title = ORIGINAL_TITLE;
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, []);
+
+  const startBlink = useCallback(() => {
+    if (titleBlinkRef.current) return;
+    let on = true;
+    titleBlinkRef.current = setInterval(() => {
+      document.title = on ? "💬 Новое сообщение!" : ORIGINAL_TITLE;
+      on = !on;
+    }, 1000);
+  }, []);
+
+  const stopBlink = useCallback(() => {
+    if (titleBlinkRef.current) {
+      clearInterval(titleBlinkRef.current);
+      titleBlinkRef.current = null;
+    }
+    document.title = ORIGINAL_TITLE;
+  }, []);
 
   const loadMessages = useCallback(async () => {
     const res = await fetch(CHAT_URL);
     const data = await res.json();
-    if (data.messages) setMessages(data.messages);
-  }, []);
+    if (data.messages) {
+      const msgs: Message[] = data.messages;
+      setMessages(msgs);
+      if (msgs.length > 0) {
+        const latestId = msgs[msgs.length - 1].id;
+        if (lastIdRef.current !== 0 && latestId > lastIdRef.current && isVisibleRef.current === false) {
+          setHasNew(true);
+          startBlink();
+        }
+        lastIdRef.current = latestId;
+      }
+    }
+  }, [startBlink]);
+
+  useEffect(() => {
+    if (!hasNew) stopBlink();
+  }, [hasNew, stopBlink]);
 
   useEffect(() => {
     const t = localStorage.getItem("planeta_token");
@@ -57,7 +109,11 @@ export default function Chat() {
 
     loadMessages();
     pollingRef.current = setInterval(loadMessages, 3000);
-    return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+      if (titleBlinkRef.current) clearInterval(titleBlinkRef.current);
+      document.title = "Планета — место для общения";
+    };
   }, [navigate, loadMessages]);
 
   useEffect(() => {
@@ -77,6 +133,7 @@ export default function Chat() {
     const msg = await res.json();
     if (res.ok && msg.id) {
       setMessages((prev) => [...prev, msg]);
+      lastIdRef.current = msg.id;
     }
     setSending(false);
     inputRef.current?.focus();
@@ -96,27 +153,34 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-neutral-50">
-      <div className="flex items-center justify-between px-4 py-3 bg-black text-white shrink-0">
+    <div className="flex flex-col h-[100dvh]" style={{ background: "linear-gradient(135deg, #0f0c29, #302b63, #24243e)" }}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-white/10" style={{ background: "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}>
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate("/")} className="text-neutral-400 hover:text-white transition-colors">
+          <button onClick={() => navigate("/")} className="text-white/50 hover:text-white transition-colors">
             <Icon name="ArrowLeft" size={20} />
           </button>
-          <span className="font-bold uppercase tracking-widest text-sm">Планета</span>
+          <span className="font-bold uppercase tracking-widest text-sm text-white">🪐 Планета</span>
+          {hasNew && (
+            <span className="bg-pink-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-pulse font-medium">
+              Новое!
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-neutral-400 text-sm">{username}</span>
-          <button onClick={handleLogout} className="text-neutral-400 hover:text-white transition-colors">
+          <span className="text-white/50 text-sm">{username}</span>
+          <button onClick={handleLogout} className="text-white/50 hover:text-white transition-colors">
             <Icon name="LogOut" size={18} />
           </button>
         </div>
       </div>
 
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
         {messages.length === 0 && (
           <div className="flex-1 flex items-center justify-center">
-            <p className="text-neutral-400 text-sm text-center">
-              Здесь пока тишина.<br />Напишите первое сообщение!
+            <p className="text-white/40 text-sm text-center">
+              Здесь пока тишина.<br />Напишите первое сообщение! 🚀
             </p>
           </div>
         )}
@@ -125,25 +189,30 @@ export default function Chat() {
           return (
             <div key={msg.id} className={`flex flex-col ${isMe ? "items-end" : "items-start"} gap-1`}>
               {!isMe && (
-                <span className="text-xs text-neutral-500 px-1">{msg.username}</span>
+                <span className="text-xs text-white/50 px-1">{msg.username}</span>
               )}
               <div
                 className={`max-w-[80%] sm:max-w-[60%] px-4 py-2.5 text-sm leading-relaxed break-words ${
                   isMe
-                    ? "bg-black text-white"
-                    : "bg-white text-neutral-900 border border-neutral-200"
+                    ? "text-white"
+                    : "text-white/90 border border-white/10"
                 }`}
+                style={isMe
+                  ? { background: "linear-gradient(135deg, #a855f7, #ec4899)" }
+                  : { background: "rgba(255,255,255,0.08)", backdropFilter: "blur(8px)" }
+                }
               >
                 {msg.text}
               </div>
-              <span className="text-[11px] text-neutral-400 px-1">{formatTime(msg.created_at)}</span>
+              <span className="text-[11px] text-white/30 px-1">{formatTime(msg.created_at)}</span>
             </div>
           );
         })}
         <div ref={bottomRef} />
       </div>
 
-      <div className="shrink-0 border-t border-neutral-200 bg-white px-4 py-3">
+      {/* Input */}
+      <div className="shrink-0 px-4 py-3 border-t border-white/10" style={{ background: "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}>
         <div className="flex items-end gap-3 max-w-3xl mx-auto">
           <textarea
             ref={inputRef}
@@ -152,18 +221,19 @@ export default function Chat() {
             onKeyDown={handleKeyDown}
             placeholder="Написать сообщение..."
             rows={1}
-            style={{ resize: "none" }}
-            className="flex-1 border border-neutral-300 px-4 py-2.5 text-sm outline-none focus:border-black transition-colors bg-transparent rounded-none min-h-[44px] max-h-[120px] overflow-y-auto"
+            style={{ resize: "none", background: "rgba(255,255,255,0.08)" }}
+            className="flex-1 border border-white/20 px-4 py-2.5 text-sm outline-none focus:border-purple-400 transition-colors text-white placeholder-white/30 rounded-none min-h-[44px] max-h-[120px] overflow-y-auto"
           />
           <button
             onClick={sendMessage}
             disabled={!text.trim() || sending}
-            className="bg-black text-white p-2.5 hover:bg-neutral-800 transition-colors disabled:opacity-40 cursor-pointer shrink-0"
+            className="text-white p-2.5 transition-all disabled:opacity-40 cursor-pointer shrink-0 hover:scale-105"
+            style={{ background: "linear-gradient(135deg, #a855f7, #ec4899)" }}
           >
             <Icon name="Send" size={20} />
           </button>
         </div>
-        <p className="text-center text-[11px] text-neutral-400 mt-2 hidden sm:block">Enter — отправить · Shift+Enter — перенос строки</p>
+        <p className="text-center text-[11px] text-white/20 mt-2 hidden sm:block">Enter — отправить · Shift+Enter — перенос строки</p>
       </div>
     </div>
   );

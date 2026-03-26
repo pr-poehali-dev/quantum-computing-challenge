@@ -7,16 +7,12 @@ import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
-    <main className="min-h-screen">
+    <main style={{ background: "#0f0c29" }}>
       <Header />
       <Hero />
-      <div id="features">
-        <Featured />
-      </div>
+      <Featured />
       <Promo />
-      <div id="pricing">
-        <Pricing />
-      </div>
+      <Pricing />
       <Footer />
     </main>
   );
