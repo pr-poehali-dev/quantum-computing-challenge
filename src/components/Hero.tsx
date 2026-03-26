@@ -32,7 +32,10 @@ export default function Hero() {
         <p className="text-lg md:text-xl max-w-2xl mx-auto px-6 opacity-90 mb-10">
           Место, где живые разговоры объединяют людей. Мгновенно, легко, без лишнего шума.
         </p>
-        <button className="bg-white text-black px-8 py-3 uppercase tracking-wide text-sm font-medium hover:bg-neutral-200 transition-colors duration-300 cursor-pointer">
+        <button
+          onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}
+          className="bg-white text-black px-8 py-3 uppercase tracking-wide text-sm font-medium hover:bg-neutral-200 transition-colors duration-300 cursor-pointer"
+        >
           Начать общение
         </button>
       </div>
