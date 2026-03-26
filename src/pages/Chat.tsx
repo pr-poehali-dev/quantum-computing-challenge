@@ -168,7 +168,13 @@ export default function Chat() {
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-white/50 text-sm">{username}</span>
+          <button
+            onClick={() => { const t = localStorage.getItem("planeta_token"); if (t) { try { const p = JSON.parse(atob(t.split(".")[1] + "==")); navigate(`/profile/${p.user_id}`); } catch (err) { console.error(err); } } }}
+            className="text-white/50 hover:text-white transition-colors text-sm flex items-center gap-1"
+          >
+            <Icon name="User" size={16} />
+            {username}
+          </button>
           <button onClick={handleLogout} className="text-white/50 hover:text-white transition-colors">
             <Icon name="LogOut" size={18} />
           </button>
@@ -189,7 +195,12 @@ export default function Chat() {
           return (
             <div key={msg.id} className={`flex flex-col ${isMe ? "items-end" : "items-start"} gap-1`}>
               {!isMe && (
-                <span className="text-xs text-white/50 px-1">{msg.username}</span>
+                <button
+                  onClick={() => navigate(`/profile/${msg.user_id}`)}
+                  className="text-xs text-purple-400 hover:text-purple-300 transition-colors px-1 cursor-pointer"
+                >
+                  {msg.username}
+                </button>
               )}
               <div
                 className={`max-w-[80%] sm:max-w-[60%] px-4 py-2.5 text-sm leading-relaxed break-words ${

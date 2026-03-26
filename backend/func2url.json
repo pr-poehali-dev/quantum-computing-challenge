@@ -1,4 +1,6 @@
 {
+  "profile": "https://functions.poehali.dev/424e20cb-9507-4f1d-a042-10ffa9691407",
+  "direct": "https://functions.poehali.dev/1fb7897c-5fff-4432-8932-5be62a6e05c0",
   "chat": "https://functions.poehali.dev/b342b7fb-efa0-4017-979a-6d02d02bea8f",
   "auth": "https://functions.poehali.dev/2b1be9fb-8e8b-4b69-b810-26e72c2e7cfb"
 }

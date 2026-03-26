@@ -1,0 +1,11 @@
+{
+  "tests": [
+    {
+      "name": "Get DMs without auth",
+      "method": "GET",
+      "path": "/?with=1",
+      "expectedStatus": 401,
+      "bodyMatcher": "partial"
+    }
+  ]
+}
